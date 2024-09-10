@@ -1,0 +1,44 @@
+[gd_scene load_steps=3 format=3 uid="uid://bvx0vb62ui784"]
+
+[ext_resource type="PackedScene" uid="uid://sqimb5shietm" path="res://components/combat_dice/combat_dice.tscn" id="1_yfes2"]
+[ext_resource type="Script" path="res://components/combat_dice/combat_dice_data_rander.gd" id="3_jarny"]
+
+[node name="CombatDiceTest" type="Node2D"]
+
+[node name="Node2D" type="Node2D" parent="."]
+position = Vector2(531, 265)
+
+[node name="CombatDice" parent="Node2D" node_paths=PackedStringArray("rander") instance=ExtResource("1_yfes2")]
+rander = NodePath("../../CombatDiceDataRander")
+
+[node name="CombatDice3" parent="Node2D" node_paths=PackedStringArray("rander") instance=ExtResource("1_yfes2")]
+position = Vector2(94, 2)
+rander = NodePath("../../CombatDiceDataRander")
+
+[node name="CombatDice2" parent="Node2D" node_paths=PackedStringArray("rander") instance=ExtResource("1_yfes2")]
+position = Vector2(172, 2)
+rander = NodePath("../../CombatDiceDataRander")
+
+[node name="CombatDice4" parent="Node2D" node_paths=PackedStringArray("rander") instance=ExtResource("1_yfes2")]
+position = Vector2(251, 2)
+rander = NodePath("../../CombatDiceDataRander")
+
+[node name="CombatDice5" parent="Node2D" node_paths=PackedStringArray("rander") instance=ExtResource("1_yfes2")]
+position = Vector2(-1, 86)
+rander = NodePath("../../CombatDiceDataRander")
+
+[node name="CombatDice6" parent="Node2D" node_paths=PackedStringArray("rander") instance=ExtResource("1_yfes2")]
+position = Vector2(96, 88)
+rander = NodePath("../../CombatDiceDataRander")
+
+[node name="CombatDice7" parent="Node2D" node_paths=PackedStringArray("rander") instance=ExtResource("1_yfes2")]
+position = Vector2(177, 88)
+rander = NodePath("../../CombatDiceDataRander")
+
+[node name="CombatDice8" parent="Node2D" node_paths=PackedStringArray("rander") instance=ExtResource("1_yfes2")]
+position = Vector2(258, 94)
+rander = NodePath("../../CombatDiceDataRander")
+
+[node name="CombatDiceDataRander" type="Node" parent="."]
+script = ExtResource("3_jarny")
+total_points = 5

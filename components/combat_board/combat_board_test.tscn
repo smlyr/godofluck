@@ -1,0 +1,71 @@
+[gd_scene load_steps=8 format=3 uid="uid://dk24ncrakiou1"]
+
+[ext_resource type="PackedScene" uid="uid://y7r5kk3gi0ge" path="res://components/dice_queue/dice_queue.tscn" id="1_e1ihd"]
+[ext_resource type="PackedScene" uid="uid://sqimb5shietm" path="res://components/combat_dice/combat_dice.tscn" id="2_gcwte"]
+[ext_resource type="Script" path="res://components/combat_dice/combat_dice_data_rander.gd" id="3_8r5mr"]
+[ext_resource type="PackedScene" uid="uid://de33ns03jddaf" path="res://components/combat_board/combat_board.tscn" id="4_yr5is"]
+[ext_resource type="PackedScene" uid="uid://b1q6yf5pwbvqf" path="res://components/cond_dice/cond_dice.tscn" id="5_h6ie8"]
+[ext_resource type="Script" path="res://components/cond_dice/cond_dice_data_rander.gd" id="6_jhcs4"]
+
+[sub_resource type="GDScript" id="GDScript_lcomx"]
+script/source = "extends Button
+
+
+
+
+func _on_pressed() -> void:
+    disabled = true
+    %CombatBoard.combat()
+    %CombatBoard.combat_finished.connect(func(): disabled = false, CONNECT_ONE_SHOT)
+"
+
+[node name="CombatBoardTest" type="Node2D"]
+
+[node name="Left" parent="." node_paths=PackedStringArray("dice_rander") instance=ExtResource("1_e1ihd")]
+position = Vector2(234, 327)
+size = Vector2(400, 100)
+dice_proto = ExtResource("2_gcwte")
+capacity = 6
+slide_direction_str = "RIGHT"
+dice_rander = NodePath("../CombatDiceDataRander")
+
+[node name="Right" parent="." node_paths=PackedStringArray("dice_rander") instance=ExtResource("1_e1ihd")]
+position = Vector2(951, 323)
+size = Vector2(400, 100)
+dice_proto = ExtResource("2_gcwte")
+capacity = 6
+slide_direction_str = "LEFT"
+dice_rander = NodePath("../CombatDiceDataRander")
+
+[node name="CombatDiceDataRander" type="Node" parent="."]
+script = ExtResource("3_8r5mr")
+total_points = 6
+
+[node name="CombatBtn" type="Button" parent="."]
+offset_left = 561.0
+offset_top = 598.0
+offset_right = 630.0
+offset_bottom = 629.0
+text = "Combat"
+script = SubResource("GDScript_lcomx")
+
+[node name="CombatBoard" parent="." node_paths=PackedStringArray("cond_queue", "queue_pair") instance=ExtResource("4_yr5is")]
+unique_name_in_owner = true
+position = Vector2(591, 301)
+cond_queue = NodePath("../Cond")
+queue_pair = [NodePath("../Left"), NodePath("../Right")]
+height = 500.0
+n_combats = 3
+
+[node name="Cond" parent="." node_paths=PackedStringArray("dice_rander") instance=ExtResource("1_e1ihd")]
+position = Vector2(238, 579)
+size = Vector2(400, 100)
+dice_proto = ExtResource("5_h6ie8")
+capacity = 4
+slide_direction_str = "RIGHT"
+dice_rander = NodePath("CondDiceDataRander")
+
+[node name="CondDiceDataRander" type="Node" parent="Cond"]
+script = ExtResource("6_jhcs4")
+
+[connection signal="pressed" from="CombatBtn" to="CombatBtn" method="_on_pressed"]

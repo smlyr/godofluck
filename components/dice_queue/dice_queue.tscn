@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://y7r5kk3gi0ge"]
+
+[ext_resource type="Script" path="res://components/dice_queue/dice_queue.gd" id="1_avj1i"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_klavi"]
+
+[node name="DiceQueue" type="Node2D"]
+script = ExtResource("1_avj1i")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.145098, 0.231373, 0.231373, 1)
+scale = Vector2(100, 100)
+texture = SubResource("CanvasTexture_klavi")
+
+[node name="Dices" type="Node2D" parent="."]
+
+[node name="Dequeue" type="Node2D" parent="."]

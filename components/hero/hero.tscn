@@ -1,0 +1,54 @@
+[gd_scene load_steps=9 format=3 uid="uid://exlwbuecjm10"]
+
+[ext_resource type="Texture2D" uid="uid://c8pxda2edq20b" path="res://assets/Knight_player/Idle_KG_2.png" id="1_lpcrr"]
+[ext_resource type="Script" path="res://components/hero/hero.gd" id="1_q3qs0"]
+[ext_resource type="PackedScene" uid="uid://bho2wnwyr3h3l" path="res://components/health_bar/HealthBar.tscn" id="2_bysb1"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fl0jt"]
+atlas = ExtResource("1_lpcrr")
+region = Rect2(0, 0, 100, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8y6j0"]
+atlas = ExtResource("1_lpcrr")
+region = Rect2(100, 0, 100, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fx5i7"]
+atlas = ExtResource("1_lpcrr")
+region = Rect2(200, 0, 100, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rfq8g"]
+atlas = ExtResource("1_lpcrr")
+region = Rect2(300, 0, 100, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_oqame"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fl0jt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8y6j0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fx5i7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rfq8g")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Hero" type="Node2D"]
+script = ExtResource("1_q3qs0")
+health = 10
+max_health = 10
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_oqame")
+autoplay = "default"
+frame_progress = 0.608956
+
+[node name="HealthBar" parent="." instance=ExtResource("2_bysb1")]
+position = Vector2(-36, 51)

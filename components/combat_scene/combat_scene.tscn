@@ -1,0 +1,152 @@
+[gd_scene load_steps=11 format=3 uid="uid://dvsa6hd8fwsg"]
+
+[ext_resource type="PackedScene" uid="uid://exlwbuecjm10" path="res://components/hero/hero.tscn" id="1_i1555"]
+[ext_resource type="PackedScene" uid="uid://y7r5kk3gi0ge" path="res://components/dice_queue/dice_queue.tscn" id="1_o74hy"]
+[ext_resource type="PackedScene" uid="uid://cggrk0qrbkefx" path="res://components/monster/monster.tscn" id="2_2hg7j"]
+[ext_resource type="PackedScene" uid="uid://sqimb5shietm" path="res://components/combat_dice/combat_dice.tscn" id="2_bstmd"]
+[ext_resource type="Script" path="res://components/combat_dice/combat_dice_data_rander.gd" id="3_voqju"]
+[ext_resource type="PackedScene" uid="uid://de33ns03jddaf" path="res://components/combat_board/combat_board.tscn" id="4_xhsdk"]
+[ext_resource type="PackedScene" uid="uid://b1q6yf5pwbvqf" path="res://components/cond_dice/cond_dice.tscn" id="5_divt6"]
+[ext_resource type="Script" path="res://components/cond_dice/cond_dice_data_rander.gd" id="6_vnnko"]
+
+[sub_resource type="GDScript" id="GDScript_lcomx"]
+script/source = "extends Button
+
+
+var state: int = 0
+
+
+func _ready() -> void:
+    %Hero.dead.connect(func():
+        text = \"你死了，点击重来\"
+        state = 2
+    )
+    %Monster.dead.connect(func():
+            text = \"赢了，下一个\"
+            state = 1
+    )
+    %CombatBoard.combat_finished.connect(func(): disabled = false)
+
+
+func _on_pressed() -> void:
+    match state:
+        0:
+            disabled = true
+            %CombatBoard.combat()
+        1:
+            # win next
+            %Monster.reset_health()
+            %Monster.show()
+            %CombatBoard.clear_board()
+            text = \"Combat\"
+            state = 0
+        2:
+            # lose and restart
+            %Monster.reset_health()
+            %Monster.show()
+            %Hero.reset_health()
+            %Hero.show()
+            %CombatBoard.clear_board()
+            text = \"Combat\"
+            state = 0
+    
+"
+
+[sub_resource type="GDScript" id="GDScript_c3e87"]
+script/source = "extends Node
+
+@export var fighters: Array[IFighter]
+@export var remain_blocks: Array[int] = []
+
+
+func _ready() -> void:
+    for fighter in fighters:
+        remain_blocks.append(fighter.blocks)
+
+
+func _on_combat_board_deal_started(win: int, data: CombatDiceData) -> void:
+    var lose := 1 - win
+    match data.action:
+        CombatDiceData.Action.Attack:
+            fighters[lose].take_damage(data.operand)
+        CombatDiceData.Action.Defend:
+            fighters[win].add_blocks(data.operand)
+        CombatDiceData.Action.Heal:
+            fighters[win].heal(data.operand)
+
+
+func _on_combat_board_combat_finished() -> void:
+    for i in 2:
+        fighters[i].blocks -= min(fighters[i].blocks, remain_blocks[i])
+    for i in 2:
+        remain_blocks[i] = fighters[i].blocks
+"
+
+[node name="CombatScene" type="Node2D"]
+
+[node name="Hero" parent="." instance=ExtResource("1_i1555")]
+unique_name_in_owner = true
+position = Vector2(242, 227)
+
+[node name="Monster" parent="." instance=ExtResource("2_2hg7j")]
+unique_name_in_owner = true
+position = Vector2(944, 223)
+health = 10
+max_health = 10
+
+[node name="Left" parent="." node_paths=PackedStringArray("dice_rander") instance=ExtResource("1_o74hy")]
+position = Vector2(238, 450)
+size = Vector2(400, 100)
+dice_proto = ExtResource("2_bstmd")
+capacity = 6
+slide_direction_str = "RIGHT"
+dice_rander = NodePath("../CombatDiceDataRander")
+
+[node name="Right" parent="." node_paths=PackedStringArray("dice_rander") instance=ExtResource("1_o74hy")]
+position = Vector2(951, 443)
+size = Vector2(400, 100)
+dice_proto = ExtResource("2_bstmd")
+capacity = 6
+slide_direction_str = "LEFT"
+dice_rander = NodePath("../CombatDiceDataRander")
+
+[node name="CombatDiceDataRander" type="Node" parent="."]
+script = ExtResource("3_voqju")
+total_points = 6
+
+[node name="CombatBtn" type="Button" parent="."]
+offset_left = 561.0
+offset_top = 598.0
+offset_right = 630.0
+offset_bottom = 629.0
+text = "Combat"
+script = SubResource("GDScript_lcomx")
+
+[node name="CombatBoard" parent="." node_paths=PackedStringArray("cond_queue", "queue_pair") instance=ExtResource("4_xhsdk")]
+unique_name_in_owner = true
+position = Vector2(591, 301)
+cond_queue = NodePath("../Cond")
+queue_pair = [NodePath("../Left"), NodePath("../Right")]
+height = 500.0
+n_combats = 3
+
+[node name="Cond" parent="." node_paths=PackedStringArray("dice_rander") instance=ExtResource("1_o74hy")]
+position = Vector2(238, 579)
+size = Vector2(400, 100)
+dice_proto = ExtResource("5_divt6")
+capacity = 4
+slide_direction_str = "RIGHT"
+dice_rander = NodePath("CondDiceDataRander")
+
+[node name="CondDiceDataRander" type="Node" parent="Cond"]
+script = ExtResource("6_vnnko")
+
+[node name="Services" type="Node" parent="."]
+
+[node name="CombatApplier" type="Node" parent="Services" node_paths=PackedStringArray("fighters")]
+script = SubResource("GDScript_c3e87")
+fighters = [NodePath("../../Hero"), NodePath("../../Monster")]
+
+[connection signal="pressed" from="CombatBtn" to="CombatBtn" method="_on_pressed"]
+[connection signal="combat_finished" from="CombatBoard" to="Services/CombatApplier" method="_on_combat_board_combat_finished"]
+[connection signal="deal_started" from="CombatBoard" to="Services/CombatApplier" method="_on_combat_board_deal_started"]

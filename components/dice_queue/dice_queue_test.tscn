@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://d0x782uxlog73"]
+
+[ext_resource type="PackedScene" uid="uid://y7r5kk3gi0ge" path="res://components/dice_queue/dice_queue.tscn" id="1_snmfv"]
+[ext_resource type="PackedScene" uid="uid://sqimb5shietm" path="res://components/combat_dice/combat_dice.tscn" id="2_u0g44"]
+[ext_resource type="Script" path="res://components/combat_dice/combat_dice_data_rander.gd" id="3_53aut"]
+
+[node name="DiceQueueTest" type="Node2D"]
+
+[node name="DiceQueue" parent="." node_paths=PackedStringArray("dice_rander") instance=ExtResource("1_snmfv")]
+position = Vector2(533, 333)
+size = Vector2(600, 600)
+dice_proto = ExtResource("2_u0g44")
+capacity = 6
+slide_direction_str = "RIGHT"
+dice_rander = NodePath("../CombatDiceDataRander")
+
+[node name="CombatDiceDataRander" type="Node" parent="."]
+script = ExtResource("3_53aut")
+total_points = 6
+
+[node name="Slide" type="Button" parent="."]
+offset_left = 960.0
+offset_top = 339.0
+offset_right = 1005.0
+offset_bottom = 370.0
+text = "Slide"
+
+[connection signal="pressed" from="Slide" to="DiceQueue" method="slide"]

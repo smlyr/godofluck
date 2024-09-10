@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://de33ns03jddaf"]
+
+[ext_resource type="Script" path="res://components/combat_board/combat_board.gd" id="1_wydgd"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_rji1w"]
+
+[node name="CombatBoard" type="Node2D"]
+script = ExtResource("1_wydgd")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.272032, 0.398222, 0.644606, 1)
+scale = Vector2(200, 500)
+texture = SubResource("CanvasTexture_rji1w")
+
+[node name="Left" type="Marker2D" parent="."]
+position = Vector2(-50, 0)
+
+[node name="Right" type="Marker2D" parent="."]
+position = Vector2(50, 0)

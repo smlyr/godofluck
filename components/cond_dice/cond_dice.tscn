@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://b1q6yf5pwbvqf"]
+
+[ext_resource type="Script" path="res://components/cond_dice/cond_dice.gd" id="1_8s8u0"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_fo6cy"]
+
+[node name="CondDice" type="Node2D" node_paths=PackedStringArray("clickable") groups=["Dice"]]
+script = ExtResource("1_8s8u0")
+clickable = NodePath("Sprite2D")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(60, 60)
+texture = SubResource("CanvasTexture_fo6cy")
+
+[node name="Number" type="Label" parent="."]
+offset_left = -20.0
+offset_top = -22.0
+offset_right = 20.0
+offset_bottom = 20.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1

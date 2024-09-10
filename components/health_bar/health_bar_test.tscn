@@ -1,0 +1,58 @@
+[gd_scene load_steps=3 format=3 uid="uid://d1hgea7daiqrm"]
+
+[ext_resource type="PackedScene" uid="uid://bho2wnwyr3h3l" path="res://components/health_bar/HealthBar.tscn" id="1_pncn7"]
+
+[sub_resource type="GDScript" id="GDScript_1kq4v"]
+script/source = "extends Node2D
+
+
+func _on_damage_pressed() -> void:
+    $HealthBar.take_damage(10)
+
+
+func _on_defend_pressed() -> void:
+    $HealthBar.add_blocks(10)
+
+
+func _on_heal_pressed() -> void:
+    $HealthBar.heal(10)
+"
+
+[node name="HealthBarTest" type="Node2D"]
+script = SubResource("GDScript_1kq4v")
+
+[node name="HealthBar" parent="." instance=ExtResource("1_pncn7")]
+position = Vector2(538, 306)
+
+[node name="Reset" type="Button" parent="."]
+offset_left = 661.0
+offset_top = 314.0
+offset_right = 709.0
+offset_bottom = 345.0
+text = "reset"
+
+[node name="Damage" type="Button" parent="."]
+offset_left = 457.0
+offset_top = 390.0
+offset_right = 529.0
+offset_bottom = 421.0
+text = "Damage"
+
+[node name="Defend" type="Button" parent="."]
+offset_left = 561.0
+offset_top = 388.0
+offset_right = 633.0
+offset_bottom = 419.0
+text = "Block"
+
+[node name="Heal" type="Button" parent="."]
+offset_left = 668.0
+offset_top = 387.0
+offset_right = 740.0
+offset_bottom = 418.0
+text = "Heal"
+
+[connection signal="pressed" from="Reset" to="HealthBar" method="reset"]
+[connection signal="pressed" from="Damage" to="." method="_on_damage_pressed"]
+[connection signal="pressed" from="Defend" to="." method="_on_defend_pressed"]
+[connection signal="pressed" from="Heal" to="." method="_on_heal_pressed"]
