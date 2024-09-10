@@ -1,43 +1,36 @@
 class_name IFighter
 extends Node2D
 
-@export var health: int:
-    set(h):
-        health = h
-        if health_bar:
-            health_bar.health = health
-
-
-@export var max_health: int:
-    set(mh):
-        max_health = mh
-        if health_bar:
-            health_bar.max_health = max_health
-            
-
-@export var blocks: int:
-    set(b):
-        blocks = b
-        if health_bar:
-            health_bar.blocks = blocks
-
-
 @onready var health_bar: HealthBar = find_child("HealthBar")
-
+var max_health: int:
+    set(v):
+        health_bar.max_health = v
+    get():
+        return health_bar.max_health
+var health: int:
+    set(v):
+        health_bar.health = v
+    get():
+        return health_bar.health
+var blocks: int:
+    set(v):
+        health_bar.blocks = v
+    get():
+        return health_bar.blocks
 
 signal dead
 
 
 func _ready() -> void:
-    max_health = max_health
-    health = health
-    blocks = blocks
-    health_bar.dead.connect(func(): dead.emit())
-    
+    health_bar.dead.connect(func():
+        dead.emit()
+        hide()
+    )
+
 
 func take_damage(damage: int) -> void:
     health_bar.take_damage(damage)
-            
+
 
 func heal(amount: int) -> void:
     health_bar.heal(amount)

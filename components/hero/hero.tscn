@@ -42,8 +42,6 @@ animations = [{
 
 [node name="Hero" type="Node2D"]
 script = ExtResource("1_q3qs0")
-health = 10
-max_health = 10
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_oqame")

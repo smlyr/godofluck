@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://dqq6j2cscnbpn"]
+
+[ext_resource type="Script" path="res://components/skill/skill.gd" id="1_egjs0"]
+
+[node name="Skill" type="Button" groups=["Operation"]]
+custom_minimum_size = Vector2(40, 20)
+script = ExtResource("1_egjs0")

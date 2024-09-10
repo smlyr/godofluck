@@ -25,6 +25,12 @@ run/main_scene="res://components/combat_scene/combat_scene.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+ClickService="*res://scripts/click_service.gd"
+OperationService="*res://scripts/operation_service.gd"
+ClickableService="*res://scripts/clickable_service.gd"
+
 [display]
 
 window/stretch/mode="canvas_items"
@@ -37,6 +43,7 @@ enabled=PackedStringArray("res://addons/godot_resource_groups/plugin.cfg", "res:
 
 Dice=""
 Clickable=""
+Operation=""
 
 [godot_resource_groups]
 

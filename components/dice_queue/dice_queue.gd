@@ -3,6 +3,7 @@ extends Node2D
 
 
 signal slide_finished
+signal first_fill_finished
 
 
 @export var size: Vector2
@@ -33,6 +34,7 @@ func _ready() -> void:
     for _i in capacity:
         enqueue()
         await call_adjust_anim(0.2)
+    first_fill_finished.emit()
 
 
 func enqueue() -> void:
@@ -40,7 +42,7 @@ func enqueue() -> void:
     dice.rander = dice_rander
     $Dices.add_child(dice)
     dice.position = slots.back()
-    
+
 
 func dequeue() -> Node2D:
     var dice:Node2D = $Dices.get_child(0)
@@ -49,11 +51,19 @@ func dequeue() -> Node2D:
     return dice
 
 
-func slide() -> Node2D:
-    var res = dequeue()
+func drop_one(dice: Node) -> void:
+    $Dices.remove_child(dice)
+    dice.queue_free()
     enqueue()
     call_adjust_anim(0.5)
-    return res
+
+
+func slide() -> Node2D:
+    var dice := dequeue() as IDice
+    dice.unclickable()
+    enqueue()
+    call_adjust_anim(0.5)
+    return dice
 
 
 func call_adjust_anim(t: float) -> void:

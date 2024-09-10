@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dvsa6hd8fwsg"]
+[gd_scene load_steps=16 format=3 uid="uid://dvsa6hd8fwsg"]
 
 [ext_resource type="PackedScene" uid="uid://exlwbuecjm10" path="res://components/hero/hero.tscn" id="1_i1555"]
 [ext_resource type="PackedScene" uid="uid://y7r5kk3gi0ge" path="res://components/dice_queue/dice_queue.tscn" id="1_o74hy"]
@@ -8,6 +8,9 @@
 [ext_resource type="PackedScene" uid="uid://de33ns03jddaf" path="res://components/combat_board/combat_board.tscn" id="4_xhsdk"]
 [ext_resource type="PackedScene" uid="uid://b1q6yf5pwbvqf" path="res://components/cond_dice/cond_dice.tscn" id="5_divt6"]
 [ext_resource type="Script" path="res://components/cond_dice/cond_dice_data_rander.gd" id="6_vnnko"]
+[ext_resource type="PackedScene" uid="uid://b154fexrj26pa" path="res://components/skill_container/skill_container.tscn" id="9_7xkp6"]
+[ext_resource type="PackedScene" uid="uid://dqq6j2cscnbpn" path="res://components/skill/skill.tscn" id="10_mx6am"]
+[ext_resource type="Script" path="res://components/skill/skill_data.gd" id="11_sc37k"]
 
 [sub_resource type="GDScript" id="GDScript_lcomx"]
 script/source = "extends Button
@@ -25,13 +28,14 @@ func _ready() -> void:
             text = \"赢了，下一个\"
             state = 1
     )
-    %CombatBoard.combat_finished.connect(func(): disabled = false)
+    %CombatBoard.combat_finished.connect(
+            OperationService.enable_operation.bind(true))
 
 
 func _on_pressed() -> void:
     match state:
         0:
-            disabled = true
+            OperationService.enable_operation(false)
             %CombatBoard.combat()
         1:
             # win next
@@ -47,10 +51,20 @@ func _on_pressed() -> void:
             %Hero.reset_health()
             %Hero.show()
             %CombatBoard.clear_board()
+            %SkillContainer.energy = 1
             text = \"Combat\"
             state = 0
-    
 "
+
+[sub_resource type="Resource" id="Resource_3fsyl"]
+script = ExtResource("11_sc37k")
+skill_name = "Reroll"
+cost = 1
+
+[sub_resource type="Resource" id="Resource_rf2a4"]
+script = ExtResource("11_sc37k")
+skill_name = "DropOne"
+cost = 0
 
 [sub_resource type="GDScript" id="GDScript_c3e87"]
 script/source = "extends Node
@@ -91,8 +105,6 @@ position = Vector2(242, 227)
 [node name="Monster" parent="." instance=ExtResource("2_2hg7j")]
 unique_name_in_owner = true
 position = Vector2(944, 223)
-health = 10
-max_health = 10
 
 [node name="Left" parent="." node_paths=PackedStringArray("dice_rander") instance=ExtResource("1_o74hy")]
 position = Vector2(238, 450)
@@ -114,7 +126,7 @@ dice_rander = NodePath("../CombatDiceDataRander")
 script = ExtResource("3_voqju")
 total_points = 6
 
-[node name="CombatBtn" type="Button" parent="."]
+[node name="CombatBtn" type="Button" parent="." groups=["Operation"]]
 offset_left = 561.0
 offset_top = 598.0
 offset_right = 630.0
@@ -141,6 +153,12 @@ dice_rander = NodePath("CondDiceDataRander")
 [node name="CondDiceDataRander" type="Node" parent="Cond"]
 script = ExtResource("6_vnnko")
 
+[node name="SkillContainer" parent="." instance=ExtResource("9_7xkp6")]
+unique_name_in_owner = true
+position = Vector2(848, 610)
+skill_proto = ExtResource("10_mx6am")
+skills_data = Array[ExtResource("11_sc37k")]([SubResource("Resource_3fsyl"), SubResource("Resource_rf2a4")])
+
 [node name="Services" type="Node" parent="."]
 
 [node name="CombatApplier" type="Node" parent="Services" node_paths=PackedStringArray("fighters")]
@@ -148,5 +166,6 @@ script = SubResource("GDScript_c3e87")
 fighters = [NodePath("../../Hero"), NodePath("../../Monster")]
 
 [connection signal="pressed" from="CombatBtn" to="CombatBtn" method="_on_pressed"]
+[connection signal="combat_finished" from="CombatBoard" to="SkillContainer" method="_on_combat_board_combat_finished"]
 [connection signal="combat_finished" from="CombatBoard" to="Services/CombatApplier" method="_on_combat_board_combat_finished"]
 [connection signal="deal_started" from="CombatBoard" to="Services/CombatApplier" method="_on_combat_board_deal_started"]

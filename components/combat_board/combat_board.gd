@@ -13,6 +13,7 @@ signal deal_started(win: int, data: CombatDiceData)
     set(n):
         n_combats = n
         calc_slots()
+@onready var branches: Array[Node2D] = [$Left, $Right]
 
 
 var slots: Array[Vector2]
@@ -21,11 +22,20 @@ var scores: Array[int] = [0, 0]
 var win:int
 
 
+func _ready() -> void:
+    var sigs: Array[Signal] = [queue_pair[0].first_fill_finished,
+            queue_pair[1].first_fill_finished]
+    if cond_queue:
+        sigs.push_back(cond_queue.first_fill_finished)
+    OperationService.enable_operation(false)
+    await Promise.new(sigs, 1).completed
+    OperationService.enable_operation(true)
+
+
 func clear_board() -> void:
-    for dice in $Left.get_children():
-        dice.queue_free()
-    for dice in $Right.get_children():
-        dice.queue_free()
+    for i in 2:
+        for dice in branches[i].get_children():
+            dice.queue_free()
     combat_data.clear()
     scores = [0, 0]
 
@@ -33,7 +43,7 @@ func clear_board() -> void:
 func calc_slots() -> void:
     slots = []
     for i in n_combats:
-        slots.push_back(Vector2(0, 
+        slots.push_back(Vector2(0,
                 height / (2*n_combats) * (1+2*i) - height / 2))
 
 
@@ -47,10 +57,8 @@ func add_dice_pair_once() -> void:
     for i in 2:
         dice_pair.append(queue_pair[i].slide())
         combat_data.push_back(dice_pair.back().data)
-    dice_pair[0].reparent($Left)
-    dice_pair[0].show()
-    dice_pair[1].reparent($Right)
-    dice_pair[1].show()
+        dice_pair[i].reparent(branches[i])
+        dice_pair[i].show()
     var tween := get_tree().create_tween().set_parallel()
     for i in 2:
         tween.tween_property(dice_pair[i], "position", slots[idx], 0.2)
@@ -87,10 +95,10 @@ func combat() -> void:
         await Promise.new([queue_pair[0].slide_finished, queue_pair[1].slide_finished,
                 dice_pair_placed], 1).completed
     if win != -1:
-        var destroyed_root: Node2D = $Left if win == 1 else $Right
-        for dice in destroyed_root.get_children():
+        var lose_root: Node2D = branches[1-win]
+        for dice in lose_root.get_children():
             dice.queue_free()
-        var win_root: Node2D = $Left if win == 0 else $Right
+        var win_root: Node2D = branches[1-win]
         var tween = get_tree().create_tween()
         var combat_data_idx := win
         for dice in win_root.get_children():
@@ -102,4 +110,3 @@ func combat() -> void:
     else:
         # Draw
         combat_finished.emit()
-        

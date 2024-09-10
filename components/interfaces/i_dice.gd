@@ -20,7 +20,7 @@ func reroll_once() -> void:
     data = rander.make_data()
     update_appearance()
 
-    
+
 func update_appearance() -> void:
     print("Implement by subclass")
 
@@ -35,9 +35,13 @@ func unclickable() -> void:
         clickable.remove_from_group("Clickable")
 
 
+func set_clickable_active(_active: bool) -> void:
+    pass
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     if clickable:
         clickable.add_to_group("Clickable")
+        clickable.set_meta("owner", self)
     init_data_if_not_set()
-    

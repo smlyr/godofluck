@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://b154fexrj26pa"]
+
+[ext_resource type="Script" path="res://components/skill_container/skill_container.gd" id="1_8dr40"]
+
+[node name="SkillContainer" type="Node2D" node_paths=PackedStringArray("grid_container")]
+script = ExtResource("1_8dr40")
+capacity = 3
+grid_container = NodePath("GridContainer")
+
+[node name="Number" type="Label" parent="."]
+offset_left = 29.0
+offset_top = -108.0
+offset_right = 69.0
+offset_bottom = -25.0
+theme_override_colors/font_color = Color(0.984314, 0.976471, 1, 1)
+theme_override_font_sizes/font_size = 60
+text = "3"
+
+[node name="GridContainer" type="GridContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
